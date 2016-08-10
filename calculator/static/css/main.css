@@ -13,6 +13,8 @@ body {
   top: 0px;
   left: 0px;
   cursor: default;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
@@ -104,5 +106,5 @@ h1 {
 
 /*temp*/
 #map {
-  height: 100%;
+  flex-grow: 1;
 }
