@@ -57,7 +57,6 @@ body {
 .calculator-section {
   margin: auto;
   width: 100%;
-  border-bottom: 1px solid #DDD;
 }
 
 .calculator {
@@ -101,4 +100,9 @@ h1 {
   width: 80%;
   cursor: default;
   border: 2px dashed #00a699;
+}
+
+/*temp*/
+#map {
+  height: 100%;
 }
