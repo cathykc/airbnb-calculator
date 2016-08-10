@@ -1,12 +1,31 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
 <title>Airbnb Calculator</title>
-
-
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>
 </head>
 <body>
-Hello
+
+<div class="calculator-section">
+  <div class="calculator">
+    <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
+    <div class="row calc-function">
+      <div class="col-2">
+        <input class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
+      </div>
+      <div class="col-2">
+        <div class="calc-result">
+          $627
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+</div>
 
 </body>
 </html>

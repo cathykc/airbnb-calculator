@@ -11,6 +11,5 @@ import calculator.views
 
 urlpatterns = [
     url(r'^$', calculator.views.index),
-    url(r'^db', calculator.views.db),
     url(r'^admin/', include(admin.site.urls)),
 ]
