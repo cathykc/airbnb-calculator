@@ -90,6 +90,48 @@ h1 {
   width: 80%;
 }
 
+.geocode-button {
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+  border-color: #ff5a5f;
+  border-bottom-color: #e00007;
+  background-color: #ff5a5f;
+  color: #ffffff;
+
+  font-size: 18px;
+  padding: 20px 36px;
+  line-height: 1;
+
+  display: inline-block;
+  margin-top: 18px;
+  margin-bottom: 0;
+  border-radius: 2px;
+  border: 1px solid;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+  line-height: 1.43;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.geocode-button:hover {
+  background-color:#ffa7a9;
+  border-color:#ffa7a9;
+  border-bottom-color:#ff5a5f;
+
+}
+.geocode-button:active {
+  border-color: #e00007;
+  background-color: #e00007;
+  color: #ffffff;
+}
+
 .calc-result {
   float: right;
   height: 30px;

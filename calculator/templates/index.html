@@ -14,7 +14,14 @@
     <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
     <div class="row calc-function">
       <div class="col-2">
-        <input class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
+        <input id="zipcode-input" class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
+        <input
+          id="geocode"
+          class="geocode-button"
+          type="button"
+          onclick="geocodeZipcode(document.getElementById('zipcode-input').value);"
+          value="Submit"
+        ></input>
       </div>
       <div class="col-2">
         <div class="calc-result">
@@ -24,18 +31,36 @@
     </div>
   </div>
 </div>
-<div id="map"></div>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX7TibNfGL3O6opAcUYUXMoNC-MasTr5U&callback=initMap"
+async defer></script>
 <script>
   var map;
+
   function initMap() {
+    geocoder = new google.maps.Geocoder();
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 37.772123, lng: -122.405293},
       zoom: 13
     });
   }
+
+  function geocodeZipcode(zipcode) {
+    geocoder.geocode( { 'address': zipcode}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+        if (results[0].geometry.viewport)
+          map.fitBounds(results[0].geometry.viewport);
+      }
+    });
+  }
+
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_lQjnyPUKIFIgUYQmEPoHp-IzVDLJrkA&callback=initMap"
-async defer></script>
+
+<div id="map"></div>
+
 </body>
 </html>
