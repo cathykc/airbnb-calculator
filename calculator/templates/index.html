@@ -66,10 +66,14 @@
   <div class="col-2" id="map"></div>
 </div>
 
+
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX7TibNfGL3O6opAcUYUXMoNC-MasTr5U&callback=initMap" async defer></script>
 <script>
   var map;
+
   function initMap() {
+    geocoder = new google.maps.Geocoder();
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 37.772123, lng: -122.405293},
       zoom: 13
@@ -102,6 +106,7 @@
                 "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
                 "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
               );
+              geocodeZipcode(zipcode_data.zipcode.toString())
               console.log(zipcode_data);
             }
           }
@@ -114,19 +119,31 @@
     }
 
     function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
-      console.log('updating');
-      console.log(monthly_rent);
       $('#monthly-rent').text(monthly_rent);
       $('#airbnb-earnings').text(airbnb_earnings);
       $('#ten-nights').text(ten);
       $('#thirty-nights').text(thirty);
       $('#fifty-nights').text(fifty);
     }
+
+    function geocodeZipcode(zipcode) {
+      geocoder.geocode( { 'address': zipcode}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          map.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+          });
+          if (results[0].geometry.viewport)
+            map.fitBounds(results[0].geometry.viewport);
+        }
+      });
+    }
   });
 
-
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_lQjnyPUKIFIgUYQmEPoHp-IzVDLJrkA&callback=initMap"
-async defer></script>
+
+<div id="map"></div>
+
 </body>
 </html>
