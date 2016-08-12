@@ -9,23 +9,64 @@
 </head>
 <body>
 
-<div class="calculator-section">
-  <div class="calculator">
-    <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
-    <div class="row calc-function">
-      <div class="col-2">
-        <input class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
-      </div>
-      <div class="col-2">
-        <div class="calc-result">
-          $627
+<div class="row">
+  <div class="col-2 calculator-section">
+    <div class="calculator">
+      <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
+      <div class="row calc-function">
+        <div class="row">
+          <input id="zipcode-input" class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
+        </div>
+        <div class="row">
+          <div class="col-7 result-title">
+            Typical monthly Rent<sup>*</sup>
+          </div>
+          <div class="col-3">
+            <div class="calc-av" id="monthly-rent">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-7 result-title">
+            Nightly <span class="rausch-text">Airbnb</span> Earnings<sup>**</sup>
+          </div>
+          <div class="col-3">
+            <div class="calc-av" id="airbnb-earnings">
+            </div>
+          </div>
+        </div>
+        <div class="nights-calc">
+          <div class="nights-title">Number of nights to cover rent</div>
+          <hr>
+          <div class="row">
+            <div class="col-2 nights-percent">
+              10% of rent =
+            </div>
+            <div class="col-2 nights" id="ten-nights">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2 nights-percent">
+              30% of rent =
+            </div>
+            <div class="col-2 nights" id="thirty-nights">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2 nights-percent">
+              50% of rent =
+            </div>
+            <div class="col-2 nights" id="fifty-nights">
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  <div class="col-2" id="map"></div>
 </div>
-<div id="map"></div>
 
+<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script>
   var map;
   function initMap() {
@@ -34,6 +75,56 @@
       zoom: 13
     });
   }
+
+  $(document).ready(function() {
+
+    clearResults()
+
+    $('#zipcode-input').on('input', function() {
+
+      clearResults()
+
+      if ($(this).val().length == 5 && /^\d+$/.test($(this).val())) {
+        var zipcode = parseInt($(this).val());
+        console.log(zipcode);
+
+        $.ajax({
+          url: "/get_zipcode",
+          type: "get",
+          data: { zipcode: zipcode },
+          success: function(result){
+            if (result) {
+              zipcode_data = result[0].fields;
+              updateResults(
+                "$" + zipcode_data.monthly_rent,
+                "$" + zipcode_data.nightly_rev,
+                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.1)*10)/10  + " nights on Airbnb",
+                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
+                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
+              );
+              console.log(zipcode_data);
+            }
+          }
+        });
+      }
+    });
+
+    function clearResults() {
+      updateResults("---", "---", "\u00a0?", "\u00a0?", "\u00a0?");
+    }
+
+    function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
+      console.log('updating');
+      console.log(monthly_rent);
+      $('#monthly-rent').text(monthly_rent);
+      $('#airbnb-earnings').text(airbnb_earnings);
+      $('#ten-nights').text(ten);
+      $('#thirty-nights').text(thirty);
+      $('#fifty-nights').text(fifty);
+    }
+  });
+
+
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_lQjnyPUKIFIgUYQmEPoHp-IzVDLJrkA&callback=initMap"
 async defer></script>
