@@ -66,18 +66,44 @@
   <div class="col-2" id="map"></div>
 </div>
 
-
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX7TibNfGL3O6opAcUYUXMoNC-MasTr5U&callback=initMap" async defer></script>
 <script>
   var map;
+  var marker = null;
 
   function initMap() {
     geocoder = new google.maps.Geocoder();
     map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 37.772123, lng: -122.405293},
-      zoom: 13
+      center: {lat: 38.901291, lng: -77.037206},
+      zoom: 12
     });
+    var layer = new google.maps.FusionTablesLayer({
+      query: {
+        select: 'geometry',
+        from: '1Lae-86jeUDLmA6-8APDDqazlTOy1GsTXh28DAkw',
+        where: "STATE = 'DC'"
+      },
+      styles: [{
+        polygonOptions: {
+          fillColor: '#00A699',
+          fillOpacity: 0.15
+        }
+      }, {
+        where: 'POP2001 > 10000',
+        polygonOptions: {
+          fillColor: '#00A699',
+          fillOpacity: 0.3
+        }
+      }, {
+        where: 'POP2001 > 50000',
+        polygonOptions: {
+          fillColor: '#00A699',
+          fillOpacity: 0.5
+        }
+      }]
+    });
+    layer.setMap(map);
   }
 
   $(document).ready(function() {
@@ -89,8 +115,10 @@
       clearResults()
 
       if ($(this).val().length == 5 && /^\d+$/.test($(this).val())) {
+        if (marker != null)
+          marker.setMap(null);
+        var zipcode_str = $(this).val();
         var zipcode = parseInt($(this).val());
-        console.log(zipcode);
 
         $.ajax({
           url: "/get_zipcode",
@@ -106,7 +134,8 @@
                 "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
                 "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
               );
-              geocodeZipcode(zipcode_data.zipcode.toString())
+              // geocodeZipcode(zipcode_data.zipcode.toString())
+              geocodeZipcode(zipcode_str);
               console.log(zipcode_data);
             }
           }
@@ -130,7 +159,7 @@
       geocoder.geocode( { 'address': zipcode}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
           map.setCenter(results[0].geometry.location);
-          var marker = new google.maps.Marker({
+          marker = new google.maps.Marker({
               map: map,
               position: results[0].geometry.location
           });
