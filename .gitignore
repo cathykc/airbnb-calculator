@@ -1,2 +1,6 @@
 env
 *.pyc
+.DS_Store
+app/.DS_Store
+calculator/.DS_Store
+calculator/static/.DS_Store
