@@ -72,40 +72,19 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX7TibNfGL3O6opAcUYUXMoNC-MasTr5U&callback=initMap" async defer></script>
 <script>
   var map;
-  var marker = null;
+  var zipcodePolygons = [];
+  var highlighted_polygon;
+
+  // TODO: Move all of this stuff over to an external Javascript file or several
 
   function initMap() {
-    geocoder = new google.maps.Geocoder();
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 38.901291, lng: -77.037206},
       zoom: 12
     });
-    var layer = new google.maps.FusionTablesLayer({
-      query: {
-        select: 'geometry',
-        from: '1Lae-86jeUDLmA6-8APDDqazlTOy1GsTXh28DAkw',
-        where: "STATE = 'DC'"
-      },
-      styles: [{
-        polygonOptions: {
-          fillColor: '#00A699',
-          fillOpacity: 0.15
-        }
-      }, {
-        where: 'POP2001 > 10000',
-        polygonOptions: {
-          fillColor: '#00A699',
-          fillOpacity: 0.3
-        }
-      }, {
-        where: 'POP2001 > 50000',
-        polygonOptions: {
-          fillColor: '#00A699',
-          fillOpacity: 0.5
-        }
-      }]
-    });
-    layer.setMap(map);
+
+    var zipcode_bounds = JSON.parse('{{dc_polygons}}');
+    drawPolygons(zipcode_bounds);
   }
 
   $(document).ready(function() {
@@ -114,64 +93,152 @@
 
     $('#zipcode-input').on('input', function() {
 
-      clearResults()
+      clearResults();
 
       if ($(this).val().length == 5 && /^\d+$/.test($(this).val())) {
-        if (marker != null)
-          marker.setMap(null);
-        var zipcode_str = $(this).val();
         var zipcode = parseInt($(this).val());
 
-        $.ajax({
-          url: "/get_zipcode",
-          type: "get",
-          data: { zipcode: zipcode },
-          success: function(result){
-            if (result) {
-              zipcode_data = result[0].fields;
-              updateResults(
-                "$" + zipcode_data.monthly_rent,
-                "$" + zipcode_data.nightly_rev,
-                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.1)*10)/10  + " nights on Airbnb",
-                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
-                "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
-              );
-              // geocodeZipcode(zipcode_data.zipcode.toString())
-              geocodeZipcode(zipcode_str);
-              console.log(zipcode_data);
-            }
-          }
-        });
+        showZipcodeRentInfo(zipcode);
+        highlightPolygonFromZipcode(zipcode);
       }
     });
-
-    function clearResults() {
-      var empty = "- -"
-      updateResults(empty, empty, empty, empty, empty);
-    }
-
-    function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
-      $('#monthly-rent').text(monthly_rent);
-      $('#airbnb-earnings').text(airbnb_earnings);
-      $('#ten-nights').text(ten);
-      $('#thirty-nights').text(thirty);
-      $('#fifty-nights').text(fifty);
-    }
-
-    function geocodeZipcode(zipcode) {
-      geocoder.geocode( { 'address': zipcode}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          map.setCenter(results[0].geometry.location);
-          marker = new google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
-          });
-          if (results[0].geometry.viewport)
-            map.fitBounds(results[0].geometry.viewport);
-        }
-      });
-    }
   });
+
+  /**************************************
+            Map Functions
+  **************************************/
+
+  // Draw the initial polygons on the map
+  function drawPolygons(bounds) {
+    for (var i=0; i<bounds.length; i++) {
+      var coords = [];
+      var bounds_arr = bounds[i][1];
+      for (var j=0; j<bounds_arr.length; j++) {
+        coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
+      }
+
+      var polygon = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: '#00A699',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#00A699',
+        fillOpacity: 0.35
+      });
+
+      polygon.setMap(map);
+
+      var polygonZipcode = bounds[i][0];
+
+      // Push both the zipcode and the polygon into an array to access elsewhere
+      zipcodePolygons.push([polygonZipcode, polygon]);
+
+      polygon.addListener('click', getZipcodePolygonAndRentInfo);
+    }
+  }
+
+  function getZipcodePolygonAndRentInfo(event) {
+
+    clearResults();
+
+    var vertices = this.getPath();
+    var currentZipcode = zipcodeForLocation(event.latLng);
+
+    $('#zipcode-input').val(currentZipcode.toString());
+    showZipcodeRentInfo(currentZipcode);
+
+    highlightPolygonFromVertices(vertices);
+  }
+
+  function highlightPolygonFromZipcode(zipcode) {
+    $.ajax({
+      url: "/get_bounds",
+      type: "get",
+      data: { zipcode: zipcode },
+      success: function(result){
+        if (result) {
+          var vertices = result.map(function(point) {
+            return {lat: parseFloat(point.fields.lat), lng: parseFloat(point.fields.lng)};
+          });
+
+          highlightPolygonFromVertices(vertices);
+        }
+      }
+    });
+  }
+
+  function highlightPolygonFromVertices(vertices) {
+    highlighted_polygon = new google.maps.Polygon({
+      paths: vertices,
+      strokeColor: '#CCFFCC',
+      strokeOpacity: 1.0,
+      strokeWeight: 3,
+      fillColor: '#00A699',
+      fillOpacity: 0.1
+    });
+
+    highlighted_polygon.setMap(map);
+  }
+
+  // Take in a set of coordinates, returns the zipcode they are in
+  function zipcodeForLocation(latlng) {
+    for (var i=0; i<zipcodePolygons.length; i++) {
+      if (google.maps.geometry.poly.containsLocation(latlng, zipcodePolygons[i][1])) {
+        return zipcodePolygons[i][0];
+      }
+    }
+  }
+
+  /**************************************
+            Rent Info Functions
+  **************************************/
+
+  function showZipcodeRentInfo(zipcode) {
+    $.ajax({
+      url: "/get_zipcode",
+      type: "get",
+      data: { zipcode: zipcode },
+      success: function(result){
+        if (result) {
+          zipcode_data = result[0].fields;
+          if (
+            zipcode_data.monthly_rent == null ||
+            zipcode_data.nightly_rev == null ||
+            zipcode_data.payoff_nights == null
+          ) {
+            return;
+          }
+          updateResults(
+            "$" + zipcode_data.monthly_rent,
+            "$" + zipcode_data.nightly_rev,
+            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.1)*10)/10  + " nights on Airbnb",
+            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
+            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
+          );
+        }
+      }
+    });
+  }
+
+  function clearResults() {
+    if (highlighted_polygon != null)
+      highlighted_polygon.setMap(null);
+
+    var empty = "- -";
+    updateResults(empty, empty, empty, empty, empty);
+  }
+
+  function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
+    if (monthly_rent == null || airbnb_earnings == null || ten == null || thirty == null || fifty == null) {
+      return;
+    }
+
+    $('#monthly-rent').text(monthly_rent);
+    $('#airbnb-earnings').text(airbnb_earnings);
+    $('#ten-nights').text(ten);
+    $('#thirty-nights').text(thirty);
+    $('#fifty-nights').text(fifty);
+  }
 
 </script>
 
