@@ -10,51 +10,53 @@
 <body>
 
 <div class="row">
-  <div class="col-2 calculator-section">
+  <div class="col-left calculator-section">
     <div class="calculator">
+      <div class="row">
+        <img src="{% static 'img/logo.png' %}" class="logo"/>
+      </div>
       <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
-      <div class="row calc-function">
+      <div class="calc-function">
         <div class="row">
-          <input id="zipcode-input" class="zipcode-input" type="text" placeholder="Zipcode (e.g. 19104)"/>
+          <input id="zipcode-input" class="zipcode-input" type="text" placeholder="Zipcode (19104)"/>
         </div>
         <div class="row">
-          <div class="col-7 result-title">
-            Typical monthly Rent<sup>*</sup>
-          </div>
-          <div class="col-3">
+          <div class="col-2-margin left-2">
+            <div class="result-title">
+              Typical monthly Rent*
+            </div>
             <div class="calc-av" id="monthly-rent">
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-7 result-title">
-            Nightly <span class="rausch-text">Airbnb</span> Earnings<sup>**</sup>
-          </div>
-          <div class="col-3">
+          <div class="col-2-margin">
+            <div class="result-title">
+              Nightly <span class="rausch-text">Airbnb</span> Earnings**
+            </div>
             <div class="calc-av" id="airbnb-earnings">
             </div>
           </div>
         </div>
         <div class="nights-calc">
           <div class="nights-title">Number of nights to cover rent</div>
-          <hr>
-          <div class="row">
+          <div class="row nights-row">
             <div class="col-2 nights-percent">
-              10% of rent =
+              10% of rent
             </div>
             <div class="col-2 nights" id="ten-nights">
             </div>
           </div>
-          <div class="row">
+          <hr>
+          <div class="row nights-row">
             <div class="col-2 nights-percent">
-              30% of rent =
+              30% of rent
             </div>
             <div class="col-2 nights" id="thirty-nights">
             </div>
           </div>
-          <div class="row">
+          <hr>
+          <div class="row nights-row">
             <div class="col-2 nights-percent">
-              50% of rent =
+              50% of rent
             </div>
             <div class="col-2 nights" id="fifty-nights">
             </div>
@@ -63,7 +65,7 @@
       </div>
     </div>
   </div>
-  <div class="col-2" id="map"></div>
+  <div class="col-right" id="map"></div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -144,7 +146,8 @@
     });
 
     function clearResults() {
-      updateResults("---", "---", "\u00a0?", "\u00a0?", "\u00a0?");
+      var empty = "- -"
+      updateResults(empty, empty, empty, empty, empty);
     }
 
     function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {

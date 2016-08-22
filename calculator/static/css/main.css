@@ -1,7 +1,6 @@
 @font-face {
   font-family: 'Circular Air Pro';
-  src: url('../fonts/Circular Air Pro-Light.otf');
-  src: local('../fonts/Circular Air Pro-Light.otf')
+  src: url('../fonts/Circular Air Pro-Book.otf') format("opentype");
 }
 
 * { margin:0; padding:0; }
@@ -19,7 +18,10 @@ body {
 }
 
 hr {
-  margin-bottom: 20px;
+  height: 1px;
+  border: none;
+  color: #DDD;
+  background-color: #DDD;
 }
 
 .row:before,
@@ -32,35 +34,38 @@ hr {
 .row {
   height: 100%;
   position: relative;
-  margin-bottom: 20px;
 }
 
 [class*='col-'] {
   float: left;
   min-height: 1px;
   height: 100%;
-  text-align: center;
   display:block;
   position: relative;
 }
 
+.col-2-margin {
+  width: calc(50% - 15px);
+}
+
 .col-2 {
   width: 50%;
-  text-align: center;
 }
 
-.col-3 {
-  width: 30%;
-  text-align: center;
+.left-2 {
+  margin-right: 30px;
 }
 
-.col-7 {
-  width: 70%;
-  text-align: center;
+.col-left {
+  width: 45%;
 }
 
-@media all and (max-width:700px){
-  .col-2{ width: 100%; }
+.col-right {
+  width: 55%;
+}
+
+@media all and (max-width:600px){
+  .col-left, .col-right{ width: 100%; }
   .message{ width: 70%; }
 }
 
@@ -75,13 +80,19 @@ hr {
   padding: 50px;
 }
 
+.logo {
+  width: 40px;
+  height: auto;
+  float: left;
+}
+
 h1 {
   font-family: 'Circular Air Pro';
-  color: #555;
+  color: #444;
 }
 
 .calc-function {
-  margin-top: 30px;
+  width: 70%;
 }
 
 .rausch-text {
@@ -90,55 +101,61 @@ h1 {
 
 .zipcode-input {
   float: left;
-  height: 30px;
-  padding: 10px;
-  font-size: 15px;
+  height: 10px;
+  padding: 8px;
+  font-size: 10px;
   font-family: 'Roboto', sans-serif;
-  width: calc(100% - 20px);
-  margin-top: 30px;
-  margin-bottom: 30px;
+  width: calc(100% - 16px);
+  margin-top: 20px;
+  margin-bottom: 15px;
+  color: #888;
 }
 
 .result-title {
   font-family: 'Circular Air Pro';
-  line-height: 50px;
+  font-size: 10px;
+  color: #666;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.calc-av {
+  float: left;
+  height: 10px;
+  color: #888;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  padding: 8px;
+  width: calc(100% - 16px);
+  cursor: default;
+  border: 1.5px dashed #DDD;
 }
 
 .nights-calc {
-  background-color: #00a699;
-  padding: 20px;
+  margin-top: 35px;
 }
 
 .nights-title {
   font-family: 'Circular Air Pro';
-  color: white;
-  font-size: 20px;
+  color: #444;
+  font-size: 16px;
+  margin-bottom: 25px;
+}
+
+.nights-row {
+  margin-top: 10px;
   margin-bottom: 10px;
+  color: #888;
+  font-size: 10px;
 }
 
 .nights-percent {
-  color: white;
-  text-align: right;
-}
-
-.nights {
-  color: white;
   text-align: left;
 }
 
-.calc-result, .calc-av {
-  float: right;
-  height: 30px;
-  color: #00a699;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 30px;
-  padding: 10px;
-  width: 80%;
-  cursor: default;
-  border: 2px dashed #00a699;
-  margin-left: 20px;
+.nights {
+  text-align: right;
 }
 
 /*temp*/
