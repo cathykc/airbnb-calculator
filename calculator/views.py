@@ -6,7 +6,8 @@ from django.template.loader import get_template
 from .models import *
 
 def index(request):
-    zipcode_boundary_points = ZipcodeBoundaryPoint.objects.all()
+    # limit to dc in the first pass
+    zipcode_boundary_points = ZipcodeBoundaryPoint.objects.filter(zipcode__in=range(20002,20038)).all()
     zipcode_bounds = {}
 
     for point in zipcode_boundary_points:
