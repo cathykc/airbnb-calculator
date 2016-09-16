@@ -19,10 +19,27 @@ def index(request):
 
     return render(request, 'index.html', context)
 
+
+def cbsa_from_zipcode(request):
+    if request.method == "GET":
+        zipcode_no = request.GET['zipcode']
+        cbsa = Zipcode.objects.values("cbsa").filter(zipcode=zipcode_no).values_list('cbsa',flat=True)
+        list_zipcode_from_cbsa = Zipcode.objects.filter(cbsa=cbsa[0])
+        zipcodes = set(zip.zipcode for zip in list_zipcode_from_cbsa)
+        zipcode_boundaries = ZipcodeBoundaryPoint.objects.filter(zipcode__in=zipcodes)
+
+        json_data = None
+        if len(zipcode_boundaries) > 0:
+              json_data = serializers.serialize('json', zipcode_boundaries)
+
+        return HttpResponse(json_data, content_type="application/json")
+
 def zipcode_info(request):
     if request.method == "GET":
         zipcode_no = request.GET['zipcode']
         zipcode = Zipcode.objects.filter(zipcode=zipcode_no)
+
+        print zipcode
 
         json_data = None
         if len(zipcode) > 0:
@@ -40,5 +57,7 @@ def bounds_info(request):
     json_data = None
     if len(points) > 0:
       json_data = serializers.serialize('json', points)
+
+    print json_data
 
     return HttpResponse(json_data, content_type="application/json")
