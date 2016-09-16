@@ -6,6 +6,7 @@
 <title>Airbnb Calculator</title>
 <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
 <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
 
@@ -98,6 +99,7 @@
     });
 
     var zipcode_bounds = JSON.parse('{{dc_polygons}}');
+
     drawPolygons(zipcode_bounds);
   }
 
@@ -114,6 +116,7 @@
 
         showZipcodeRentInfo(zipcode);
         highlightPolygonFromZipcode(zipcode);
+        updateCenterMap(zipcode);
       }
     });
   });
@@ -253,6 +256,33 @@
     $('#thirty-nights').text(thirty);
     $('#fifty-nights').text(fifty);
   }
+
+  function updateCenterMap(zipcode) {
+    
+    $.ajax({
+      url: "/get_bounds",
+      type: "get",
+      data: { zipcode: zipcode },
+      success: function(result){
+        if (result) {
+
+          var vertices = result.map(function(point) {
+              return {lat: parseFloat(point.fields.lat), lng: parseFloat(point.fields.lng)};
+            });
+          
+          centerLat = d3.mean(vertices, function(d) {return d.lat});
+          centerLng = d3.mean(vertices, function(d) {return d.lng});
+
+          map.setCenter({
+            lat : centerLat,
+            lng : centerLng
+            });
+
+      }
+    }
+  });
+  }
+
 
 </script>
 
