@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^get_zipcode$', calculator.views.zipcode_info),
     url(r'^get_bounds$', calculator.views.bounds_info),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^get_neighbors$', calculator.views.cbsa_from_zipcode),
+    url(r'^check_zipcode$', calculator.views.check_zipcode_exist),
 ]

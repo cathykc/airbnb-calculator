@@ -38,10 +38,7 @@ class Command(BaseCommand):
 
           zipcode_boundary_point.save()
           row_count += 1
-
-    print row_count
-
-
+          print row_count
 
 
 

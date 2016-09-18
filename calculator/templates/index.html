@@ -6,6 +6,7 @@
 <title>Airbnb Calculator</title>
 <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
 <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
 
@@ -71,7 +72,7 @@
               * The American Community Survey 5 year estimate of median gross rent (Table B25064) for the chosen zip code tabulation area.
             </div>
             <div class="col-6 nights-row">
-              ** This estimate is calculated for the chosen zip code tabulation area by first calculating the average nightly earnings, over all trips in the last year, of each listing that had a trip in the last year, and then then taking the median across listings.
+              ** This estimate is calculated for the chosen zip code tabulation area by first calculating the average nightly earnings, over all trips in the last year, of each listing that had a trip in the last year, and then taking the median across listings.
             </div>
           </div>
         </div>
@@ -98,6 +99,7 @@
     });
 
     var zipcode_bounds = JSON.parse('{{dc_polygons}}');
+
     drawPolygons(zipcode_bounds);
   }
 
@@ -112,8 +114,8 @@
       if ($(this).val().length == 5 && /^\d+$/.test($(this).val())) {
         var zipcode = parseInt($(this).val());
 
-        showZipcodeRentInfo(zipcode);
-        highlightPolygonFromZipcode(zipcode);
+        checkZipcode(zipcode);
+
       }
     });
   });
@@ -121,6 +123,27 @@
   /**************************************
             Map Functions
   **************************************/
+
+
+  function checkZipcode(zipcode) {
+    $.ajax({
+      url: "/check_zipcode",
+      type: "get",
+      data: { zipcode: zipcode },
+      success: function(result){
+        if (result) {
+          if (result == "in") {
+            showZipcodeRentInfo(zipcode);
+            highlightPolygonFromZipcode(zipcode);
+            updateCenterMap(zipcode);
+            drawNeighborPolygons(zipcode);
+          } else {
+            alertNoData();
+          }
+        }
+      }
+    });
+  }
 
   // Draw the initial polygons on the map
   function drawPolygons(bounds) {
@@ -253,6 +276,41 @@
     $('#thirty-nights').text(thirty);
     $('#fifty-nights').text(fifty);
   }
+
+  function updateCenterMap(zipcode) {
+    
+    $.ajax({
+      url: "/get_bounds",
+      type: "get",
+      data: { zipcode: zipcode },
+      success: function(result){
+        if (result) {
+
+          var vertices = result.map(function(point) {
+              return {lat: parseFloat(point.fields.lat), lng: parseFloat(point.fields.lng)};
+            });
+          
+          centerLat = d3.mean(vertices, function(d) {return d.lat});
+          centerLng = d3.mean(vertices, function(d) {return d.lng});
+
+          map.setCenter({
+            lat : centerLat,
+            lng : centerLng
+            });
+
+      }
+    }
+  });
+  }
+
+   /**************************************
+            Misc functions
+  **************************************/
+
+  function alertNoData(){
+    alert('sorry I do not have data for this zipcode');
+  }
+
 
 </script>
 
