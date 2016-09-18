@@ -114,14 +114,8 @@
       if ($(this).val().length == 5 && /^\d+$/.test($(this).val())) {
         var zipcode = parseInt($(this).val());
 
-        if (checkZipcode(zipcode) == 'in') {
-          showZipcodeRentInfo(zipcode);
-          highlightPolygonFromZipcode(zipcode);
-          updateCenterMap(zipcode);
-          drawNeighborPolygons(zipcode);
-        } else {
-          alertNoData();
-        }
+        checkZipcode(zipcode);
+
       }
     });
   });
@@ -130,6 +124,7 @@
             Map Functions
   **************************************/
 
+
   function checkZipcode(zipcode) {
     $.ajax({
       url: "/check_zipcode",
@@ -137,11 +132,17 @@
       data: { zipcode: zipcode },
       success: function(result){
         if (result) {
-          return result;
+          if (result == "in") {
+            showZipcodeRentInfo(zipcode);
+            highlightPolygonFromZipcode(zipcode);
+            updateCenterMap(zipcode);
+            drawNeighborPolygons(zipcode);
+          } else {
+            alertNoData();
+          }
         }
       }
     });
-
   }
 
   // Draw the initial polygons on the map
