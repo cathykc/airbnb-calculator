@@ -37,7 +37,6 @@ def check_zipcode_exist(request):
 
 
 def cbsa_from_zipcode(request):
-    
     if request.method == "GET":
         zipcode_no = request.GET['zipcode']
         cbsa = Zipcode.objects.values("cbsa").filter(zipcode=zipcode_no).values_list('cbsa',flat=True)
@@ -45,11 +44,11 @@ def cbsa_from_zipcode(request):
         if len(cbsa) > 0:
             list_zipcode_from_cbsa = Zipcode.objects.filter(cbsa=cbsa[0])
             zipcodes = set(zip.zipcode for zip in list_zipcode_from_cbsa)
-            zipcode_boundary_points = ZipcodeBoundaryPoint.objects.filter(zipcode__in=zipcodes).all()
+            zipcode_boundaries = ZipcodeBoundaryPoint.objects.filter(zipcode__in=zipcodes)
 
             zipcode_bounds = {}
 
-            for point in zipcode_boundary_points:
+            for point in zipcode_boundaries:
               latlng = [float(point.lat), float(point.lng)]
               zipcode_bounds.setdefault(int(point.zipcode), []).append(latlng)
 
@@ -60,7 +59,7 @@ def cbsa_from_zipcode(request):
                                     ,"payoff_nights": payoff_nights
                                     });
         
-            return HttpResponse(json_data, content_type="application/json")
+        return HttpResponse(json_data, content_type="application/json")
 
 def zipcode_info(request):
     if request.method == "GET":

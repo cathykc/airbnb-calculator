@@ -90,7 +90,6 @@
   var zipcodePolygons = [];
   var highlighted_polygon;
   var polygons;
-  var payoff_nights;
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -135,9 +134,9 @@
         if (result) {
           if (result == "in") {
             showZipcodeRentInfo(zipcode);
+            highlightPolygonFromZipcode(zipcode);
             updateCenterMap(zipcode);
             drawNeighborPolygons(zipcode);
-            highlightPolygonFromZipcode(zipcode);
           } else {
             alertNoData();
           }
@@ -165,8 +164,6 @@
       for (var j=0; j<bounds_arr.length; j++) {
         coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
       }
-
-      console.log(color_scale(payoff_values[bounds[i][0]]));
 
         polygons = new google.maps.Polygon({
         paths: coords,
@@ -277,10 +274,6 @@
 
     var empty = "- -";
     updateResults(empty, empty, empty, empty, empty);
-  }
-
-  function removeLine() {
-  polygons.setMap(null);
   }
 
   function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
