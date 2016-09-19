@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core import serializers
 from django.template.loader import get_template
+import json
 
 from .models import *
 
@@ -45,12 +46,18 @@ def cbsa_from_zipcode(request):
             zipcodes = set(zip.zipcode for zip in list_zipcode_from_cbsa)
             zipcode_boundaries = ZipcodeBoundaryPoint.objects.filter(zipcode__in=zipcodes)
 
-            json_data = None
-            if len(zipcode_boundaries) > 0:
-                  json_data = serializers.serialize('json', zipcode_boundaries)
+            zipcode_bounds = {}
 
-        else:
-            json_data = ''
+            for point in zipcode_boundaries:
+              latlng = [float(point.lat), float(point.lng)]
+              zipcode_bounds.setdefault(int(point.zipcode), []).append(latlng)
+
+            zipcode_bounds_list = [[zipcode, zipcode_bounds[zipcode]] for zipcode in zipcode_bounds]
+            payoff_nights = serializers.serialize('json', list_zipcode_from_cbsa, fields=('zipcode','payoff_nights'))
+
+            json_data = json.dumps({ "bounds":json.dumps(zipcode_bounds_list)
+                                    ,"payoff_nights": payoff_nights
+                                    });
         
         return HttpResponse(json_data, content_type="application/json")
 

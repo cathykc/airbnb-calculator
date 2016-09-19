@@ -89,18 +89,18 @@
   var map;
   var zipcodePolygons = [];
   var highlighted_polygon;
+  var polygons;
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
   function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 38.901291, lng: -77.037206},
-      zoom: 12
+      zoom: 10
     });
 
-    var zipcode_bounds = JSON.parse('{{dc_polygons}}');
+    drawNeighborPolygons(20005);
 
-    drawPolygons(zipcode_bounds);
   }
 
   $(document).ready(function() {
@@ -146,7 +146,18 @@
   }
 
   // Draw the initial polygons on the map
-  function drawPolygons(bounds) {
+  function drawPolygons(data) {
+    bounds = JSON.parse(data['bounds']);
+    payoff_nights = JSON.parse(data['payoff_nights']);
+    var payoff_values = {};
+
+    payoff_nights.forEach(function(d) {payoff_values[d.fields.zipcode]=d.fields.payoff_nights})
+
+    max_payoff = d3.max(payoff_nights,function(d) {return d.fields.payoff_nights;});
+    min_payoff = d3.min(payoff_nights,function(d) {return d.fields.payoff_nights;});
+
+    color_scale = d3.scaleLinear().domain([min_payoff,max_payoff]).range(['#F2E5EE','#881A62']);
+
     for (var i=0; i<bounds.length; i++) {
       var coords = [];
       var bounds_arr = bounds[i][1];
@@ -154,23 +165,23 @@
         coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
       }
 
-      var polygon = new google.maps.Polygon({
+        polygons = new google.maps.Polygon({
         paths: coords,
-        strokeColor: '#00A699',
+        strokeColor: 'white',
         strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#00A699',
-        fillOpacity: 0.35
+        strokeWeight: 0.5,
+        fillColor: color_scale(payoff_values[bounds[i][0]]),
+        fillOpacity: 0.5
       });
 
-      polygon.setMap(map);
+      polygons.setMap(map);
 
       var polygonZipcode = bounds[i][0];
 
       // Push both the zipcode and the polygon into an array to access elsewhere
-      zipcodePolygons.push([polygonZipcode, polygon]);
+      zipcodePolygons.push([polygonZipcode, polygons]);
 
-      polygon.addListener('click', getZipcodePolygonAndRentInfo);
+      polygons.addListener('click', getZipcodePolygonAndRentInfo);
     }
   }
 
@@ -302,6 +313,19 @@
     }
   });
   }
+
+  function drawNeighborPolygons(zipcode){
+      $.ajax({
+        url: "/get_neighbors",
+        type: "get",
+        data: { zipcode: zipcode },
+        success: function(result){
+          if (result) {
+            drawPolygons(result);            
+          }
+        }
+      });
+    }
 
    /**************************************
             Misc functions
