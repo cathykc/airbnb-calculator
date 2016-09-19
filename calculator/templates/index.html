@@ -89,7 +89,6 @@
   var map;
   var zipcodePolygons = [];
   var highlighted_polygon;
-  var polygons;
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -135,9 +134,9 @@
         if (result) {
           if (result == "in") {
             showZipcodeRentInfo(zipcode);
+            highlightPolygonFromZipcode(zipcode);
             updateCenterMap(zipcode);
             drawNeighborPolygons(zipcode);
-            highlightPolygonFromZipcode(zipcode);
           } else {
             alertNoData();
           }
@@ -155,7 +154,7 @@
         coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
       }
 
-        polygons = new google.maps.Polygon({
+      var polygon = new google.maps.Polygon({
         paths: coords,
         strokeColor: '#00A699',
         strokeOpacity: 0.8,
@@ -164,14 +163,14 @@
         fillOpacity: 0.35
       });
 
-      polygons.setMap(map);
+      polygon.setMap(map);
 
       var polygonZipcode = bounds[i][0];
 
       // Push both the zipcode and the polygon into an array to access elsewhere
-      zipcodePolygons.push([polygonZipcode, polygons]);
+      zipcodePolygons.push([polygonZipcode, polygon]);
 
-      polygons.addListener('click', getZipcodePolygonAndRentInfo);
+      polygon.addListener('click', getZipcodePolygonAndRentInfo);
     }
   }
 
@@ -266,10 +265,6 @@
     updateResults(empty, empty, empty, empty, empty);
   }
 
-  function removeLine() {
-  polygons.setMap(null);
-  }
-
   function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
     if (monthly_rent == null || airbnb_earnings == null || ten == null || thirty == null || fifty == null) {
       return;
@@ -307,19 +302,6 @@
     }
   });
   }
-
-  function drawNeighborPolygons(zipcode){
-      $.ajax({
-        url: "/get_neighbors",
-        type: "get",
-        data: { zipcode: zipcode },
-        success: function(result){
-          if (result) {
-            drawPolygons(result);            
-          }
-        }
-      });
-    }
 
    /**************************************
             Misc functions
