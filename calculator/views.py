@@ -54,8 +54,11 @@ def cbsa_from_zipcode(request):
               zipcode_bounds.setdefault(int(point.zipcode), []).append(latlng)
 
             zipcode_bounds_list = [[zipcode, zipcode_bounds[zipcode]] for zipcode in zipcode_bounds]
+            payoff_nights = serializers.serialize('json', list_zipcode_from_cbsa, fields=('zipcode','payoff_nights'))
 
-            json_data = json.dumps(zipcode_bounds_list)
+            json_data = json.dumps({ "bounds":json.dumps(zipcode_bounds_list)
+                                    ,"payoff_nights": payoff_nights
+                                    });
         
             return HttpResponse(json_data, content_type="application/json")
 
