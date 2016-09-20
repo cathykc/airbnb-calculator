@@ -69,10 +69,10 @@
         <div class="nights-title">Notes</div>
           <div class="row nights-row">
             <div class="col-6 nights-row">
-              * The American Community Survey 5 year estimate of median gross rent (Table B25064) for the chosen zip code tabulation area.
+              * The American Community Survey 5 year estimate of median gross rent (Table B25064) for the chosen zip code tabulation area. Rent above $2,000 is reported as $2,000 due to censoring by the Census.
             </div>
             <div class="col-6 nights-row">
-              ** This estimate is calculated for the chosen zip code tabulation area by first calculating the average nightly earnings, over all trips in the last year, of each listing that had a trip in the last year, and then taking the median across listings.
+              ** This estimate is calculated for the chosen zip code tabulation area by first calculating the average nightly earnings, over all trips in the last year, of each private room listing that had a trip in the last year, and then taking the median across listings.
             </div>
           </div>
         </div>
@@ -90,6 +90,7 @@
   var zipcodePolygons = [];
   var highlighted_polygon;
   var polygons;
+  var zipcodeDisplayed = [];
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -156,7 +157,11 @@
     max_payoff = d3.max(payoff_nights,function(d) {return d.fields.payoff_nights;});
     min_payoff = d3.min(payoff_nights,function(d) {return d.fields.payoff_nights;});
 
-    color_scale = d3.scaleLinear().domain([min_payoff,max_payoff]).range(['#F2E5EE','#881A62']);
+    //color_scale = d3.scaleLinear().domain([min_payoff,max_payoff]).range(['#881A62','#F2E5EE']);
+
+    color_scale = d3.scaleQuantize().domain([min_payoff,max_payoff]).range(['#2b8cbe','#7bccc4','#bae4bc','#f0f9e8'])
+
+
 
     for (var i=0; i<bounds.length; i++) {
       var coords = [];
@@ -180,6 +185,7 @@
 
       // Push both the zipcode and the polygon into an array to access elsewhere
       zipcodePolygons.push([polygonZipcode, polygons]);
+      zipcodeDisplayed.push(polygonZipcode);
 
       polygons.addListener('click', getZipcodePolygonAndRentInfo);
     }
@@ -315,6 +321,9 @@
   }
 
   function drawNeighborPolygons(zipcode){
+
+    if (zipcodeDisplayed.includes(zipcode) != true) {
+
       $.ajax({
         url: "/get_neighbors",
         type: "get",
@@ -325,7 +334,8 @@
           }
         }
       });
-    }
+    }  
+  }
 
    /**************************************
             Misc functions
