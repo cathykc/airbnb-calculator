@@ -168,12 +168,16 @@
         coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
       }
 
+      var color;
+
+      if (payoff_values[bounds[i][0]] == null) {color = 'white'} else {color = color_scale(payoff_values[bounds[i][0]]);}
+
         polygons = new google.maps.Polygon({
         paths: coords,
         strokeColor: 'white',
         strokeOpacity: 0.8,
         strokeWeight: 0.5,
-        fillColor: color_scale(payoff_values[bounds[i][0]]),
+        fillColor: color,
         fillOpacity: 0.5
       });
 
