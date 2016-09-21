@@ -65,7 +65,7 @@
         </div>
 
         <div class="row">
-          <div class="nights-title">Nights to cover all rent</div>
+          <div class="nights-title">Number of nights to cover full rent</div>
           <svg id='legend-container'></svg>
         </div>
 
@@ -151,14 +151,14 @@
     .enter().append("svg:text")
     .attr("x",function(d,i) {return i*40;})
     .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[0]);})
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
 
 
     d3.select("#legend-container").selectAll('text')
       .data(brew_colors.reverse())
     .attr("x",function(d,i) {return i*40;})
     .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[0]);})
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
 
   }
 
