@@ -163,3 +163,10 @@ h1 {
 #map {
   flex-grow: 1;
 }
+
+#legend-container{
+  width: 400px;
+  height: 60px;
+  font-size: 13px;
+  fill: #555;
+}

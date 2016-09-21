@@ -27,7 +27,7 @@ class Command(BaseCommand):
           continue
 
         monthly_rent = None
-        if row[3].strip().lower() != "na":
+        if row[2].strip().lower() != "na":
           monthly_rent = float(row[3])
 
         nightly_rev = None

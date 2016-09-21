@@ -64,6 +64,11 @@
           </div>
         </div>
 
+        <div class="row">
+          <div class="nights-title">Number of nights to cover full rent</div>
+          <svg id='legend-container'></svg>
+        </div>
+
         <div class ='row'> 
 
         <div class="nights-title">Notes</div>
@@ -91,6 +96,9 @@
   var highlighted_polygon;
   var polygons;
   var zipcodeDisplayed = [];
+  var brew_colors = ['#084081','#0868ac','#2b8cbe','#4eb3d3','#7bccc4','#a8ddb5','#ccebc5','#e0f3db','#f7fcf0'];
+  var color_scale = d3.scaleQuantize().range(brew_colors);
+  var number_format = d3.format(".2r");
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -126,6 +134,37 @@
   **************************************/
 
 
+  function buildLegend() {
+
+    d3.select("#legend-container").selectAll('rect')
+      .data(brew_colors.reverse())
+    .enter().append("svg:rect")
+    .attr("width",40)
+    .attr("height",25)
+    .attr("x",function(d,i) {return i*40;})
+    .attr("y",10)
+    .attr("fill",function(d) {return d;})
+
+
+    d3.select("#legend-container").selectAll('text')
+      .data(brew_colors.reverse())
+    .enter().append("svg:text")
+    .attr("x",function(d,i) {return i*40;})
+    .attr("y",58)
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
+
+
+    d3.select("#legend-container").selectAll('text')
+      .data(brew_colors.reverse())
+    .attr("x",function(d,i) {return i*40;})
+    .attr("y",58)
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
+
+  }
+
+
+
+
   function checkZipcode(zipcode) {
     $.ajax({
       url: "/check_zipcode",
@@ -157,9 +196,7 @@
     max_payoff = d3.max(payoff_nights,function(d) {return d.fields.payoff_nights;});
     min_payoff = d3.min(payoff_nights,function(d) {return d.fields.payoff_nights;});
 
-    //color_scale = d3.scaleLinear().domain([min_payoff,max_payoff]).range(['#881A62','#F2E5EE']);
-
-    color_scale = d3.scaleQuantize().domain([min_payoff,max_payoff]).range(['#084081','#0868ac','#2b8cbe','#4eb3d3','#7bccc4','#a8ddb5','#ccebc5','#e0f3db','#f7fcf0'])
+    color_scale.domain([min_payoff,max_payoff]);
 
     for (var i=0; i<bounds.length; i++) {
       var coords = [];
@@ -168,12 +205,16 @@
         coords.push({lat: bounds_arr[j][0], lng: bounds_arr[j][1]});
       }
 
+      var color;
+
+      if (payoff_values[bounds[i][0]] == null) {color = 'white'} else {color = color_scale(payoff_values[bounds[i][0]]);}
+
         polygons = new google.maps.Polygon({
         paths: coords,
         strokeColor: 'white',
         strokeOpacity: 0.8,
         strokeWeight: 0.5,
-        fillColor: color_scale(payoff_values[bounds[i][0]]),
+        fillColor: color,
         fillOpacity: 0.5
       });
 
@@ -184,6 +225,10 @@
       // Push both the zipcode and the polygon into an array to access elsewhere
       zipcodePolygons.push([polygonZipcode, polygons]);
       zipcodeDisplayed.push(polygonZipcode);
+
+      //build legend
+
+      buildLegend();
 
       polygons.addListener('click', getZipcodePolygonAndRentInfo);
     }
@@ -240,6 +285,7 @@
       }
     }
   }
+
 
   /**************************************
             Rent Info Functions
