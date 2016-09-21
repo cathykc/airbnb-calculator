@@ -65,7 +65,7 @@
         </div>
 
         <div class="row">
-          <div class="nights-title">Number of nights to cover full rent</div>
+          <div class="nights-title">Number of nights to cover 10% of rent</div>
           <svg id='legend-container'></svg>
         </div>
 
@@ -97,6 +97,7 @@
   var polygons;
   var zipcodeDisplayed = [];
   var brew_colors = ['#084081','#0868ac','#2b8cbe','#4eb3d3','#7bccc4','#a8ddb5','#ccebc5','#e0f3db','#f7fcf0'];
+  var brew_reverse = brew_colors.reverse();
   var color_scale = d3.scaleQuantize().range(brew_colors);
   var number_format = d3.format(".2r");
 
@@ -137,7 +138,7 @@
   function buildLegend() {
 
     d3.select("#legend-container").selectAll('rect')
-      .data(brew_colors.reverse())
+      .data(brew_reverse)
     .enter().append("svg:rect")
     .attr("width",40)
     .attr("height",25)
@@ -147,22 +148,22 @@
 
 
     d3.select("#legend-container").selectAll('text')
-      .data(brew_colors.reverse())
+      .data(brew_reverse)
     .enter().append("svg:text")
     .attr("x",function(d,i) {return i*40;})
     .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
-
-
-    d3.select("#legend-container").selectAll('text')
-      .data(brew_colors.reverse())
-    .attr("x",function(d,i) {return i*40;})
-    .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[1]);})
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1] / 10);})
 
   }
 
+  function updateLegend(){
 
+    d3.select("#legend-container").selectAll('text')
+      .data(brew_reverse)
+    .attr("x",function(d,i) {return i*40;})
+    .attr("y",58)
+    .text(function(d) {return number_format(color_scale.invertExtent(d)[1] / 10);})
+  }
 
 
   function checkZipcode(zipcode) {
@@ -177,6 +178,7 @@
             highlightPolygonFromZipcode(zipcode);
             updateCenterMap(zipcode);
             drawNeighborPolygons(zipcode);
+            updateLegend();
           } else {
             alertNoData();
           }
