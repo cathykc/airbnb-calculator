@@ -65,7 +65,7 @@
         </div>
 
         <div class="row">
-          <div class="nights-title">Number of nights to cover 10% of rent</div>
+          <div class="nights-title">Relative Opportunity Within Greater Metropolitan Area ***</div>
           <svg id='legend-container'></svg>
         </div>
 
@@ -74,10 +74,16 @@
         <div class="nights-title">Notes</div>
           <div class="row nights-row">
             <div class="col-6 nights-row">
-              * The American Community Survey 5 year estimate of median gross rent (Table B25064) for the chosen zip code tabulation area. Rent above $2,000 is reported as $2,000 due to censoring by the Census.
+              * Data reflect the 5 year estimate of median gross rent for the selected zip code. (From The American Community Survey; Table B25064, Zip Code Tabulation Areas). Note: All rents exceeding $2000 are reported as $2000, due to limitations of Census information. 
             </div>
             <div class="col-6 nights-row">
-              ** This estimate is calculated for the chosen zip code tabulation area by first calculating the average nightly earnings, over all trips in the last year, of each private room listing that had a trip in the last year, and then taking the median across listings.
+              ** This estimate is calculated for the chosen zip code by calculating the average nightly earnings of all booked private room listings in 2015, and taking the median across listings.
+            </div>
+            <div class="col-6 nights-row">
+              *** This index displays the relative opportunity that Airbnb represents in a given zipcode. The darker, the highest the rent one Airbnb night can cover.
+            </div>
+            <div class="col-6 nights-row">
+              To learn more about hosting, visit <a href="wwww.airbnb.com/host"> airbnb.com/host </a>
             </div>
           </div>
         </div>
@@ -137,6 +143,8 @@
 
   function buildLegend() {
 
+  var opportunity_legend = ['low','middle','high'];
+
     d3.select("#legend-container").selectAll('rect')
       .data(brew_reverse)
     .enter().append("svg:rect")
@@ -148,22 +156,22 @@
 
 
     d3.select("#legend-container").selectAll('text')
-      .data(brew_reverse)
+      .data(opportunity_legend)
     .enter().append("svg:text")
-    .attr("x",function(d,i) {return i*40;})
-    .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[1] / 10);})
+    .attr("x",function(d,i) {return i*165;})
+    .attr("y",60)
+    .text(function(d) {return d})
 
   }
 
-  function updateLegend(){
+  // function updateLegend(){
 
-    d3.select("#legend-container").selectAll('text')
-      .data(brew_reverse)
-    .attr("x",function(d,i) {return i*40;})
-    .attr("y",58)
-    .text(function(d) {return number_format(color_scale.invertExtent(d)[1] / 10);})
-  }
+  //   d3.select("#legend-container").selectAll('text')
+  //     .data(brew_reverse)
+  //   .attr("x",function(d,i) {return i*40;})
+  //   .attr("y",58)
+  //   .text(function(d) {return number_format(color_scale.invertExtent(d)[1] / 10);})
+  // }
 
 
   function checkZipcode(zipcode) {
@@ -178,7 +186,7 @@
             highlightPolygonFromZipcode(zipcode);
             updateCenterMap(zipcode);
             drawNeighborPolygons(zipcode);
-            updateLegend();
+            //updateLegend();
           } else {
             alertNoData();
           }
