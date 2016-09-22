@@ -3,6 +3,11 @@
   src: url('../fonts/Circular Air Pro-Book.otf') format("opentype");
 }
 
+@font-face {
+  font-family: 'Circular Air Pro-Light';
+  src: url('../fonts/Circular Air Pro-Light.otf') format("opentype");
+}
+
 * { margin:0; padding:0; }
 
 body {
@@ -14,7 +19,7 @@ body {
   cursor: default;
   display: flex;
   flex-direction: column;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Circular Air Pro'
 }
 
 hr {
@@ -64,6 +69,10 @@ hr {
   width: 55%;
 }
 
+.col-3 {
+  width: 33%;
+}
+
 @media all and (max-width:600px){
   .col-left, .col-right{ width: 100%; }
   .message{ width: 70%; }
@@ -81,34 +90,36 @@ hr {
 }
 
 .logo {
-  width: 40px;
+  width: 60px;
   height: auto;
   float: left;
+  margin-bottom: 50px;
+  margin-top: 40px;
 }
 
-h1 {
-  font-family: 'Circular Air Pro';
-  color: #444;
+.title-text {
+  font-family: 'Circular Air Pro-Light';
+  color: #444;  
+  font-size: 48px;
+  width:80%;
 }
 
 .calc-function {
-  width: 70%;
+  width: 80%;
 }
 
 .rausch-text {
-  color: #ff7677;
 }
 
-.zipcode-input {
-  float: left;
-  height: 10px;
-  padding: 8px;
-  font-size: 13px;
-  font-family: 'Roboto', sans-serif;
-  width: calc(100% - 16px);
-  margin-top: 20px;
-  margin-bottom: 15px;
-  color: #888;
+.input {
+    font-size: 48px;
+    color: #444;
+    font-family: 'Circular Air Pro-Light';
+    border: 0;
+    border-left: 190px;
+    text-align: center;
+    border-bottom: 2px solid #DADCDF;
+    border-width: 1px;
 }
 
 .result-title {
@@ -121,34 +132,33 @@ h1 {
 
 .calc-av {
   float: left;
-  height: 10px;
+  height: 30px;
   color: #888;
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 30px;
   padding: 8px;
   width: calc(100% - 16px);
   cursor: default;
-  border: 1.5px dashed #DDD;
 }
 
 .nights-calc {
   margin-top: 35px;
 }
 
-.nights-title {
+.notes-title {
   font-family: 'Circular Air Pro';
   color: #444;
-  font-size: 16px;
+  font-size: 28px;
   margin-bottom: 25px;
-  margin-top: 25px;
+  margin-top: 25%;
 }
 
 .nights-row {
   margin-top: 10px;
   margin-bottom: 10px;
   color: #888;
-  font-size: 13px;
+  font-size: 18px;
 }
 
 .nights-percent {
@@ -164,9 +174,29 @@ h1 {
   flex-grow: 1;
 }
 
+.legend-title{
+  font-family: 'Circular Air Pro';
+  color: #444;
+  font-size: 16px;
+  margin-bottom: 25px;
+  margin-top: 25px;
+  margin-left: 40px
+}
+
+#legend{
+  top: 20px;
+  right: 20px;
+  position: absolute;
+  background-color: white;
+  padding-right: -18px;
+  padding-bottom: 15px;
+  opacity: 0.95;
+}
+
 #legend-container{
   width: 400px;
   height: 65px;
   font-size: 13px;
   fill: #555;
+  margin-left:40px;
 }

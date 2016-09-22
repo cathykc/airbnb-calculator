@@ -16,71 +16,19 @@
       <div class="row">
         <img src="{% static 'img/logo.png' %}" class="logo"/>
       </div>
-      <h1>How much can <span class="rausch-text">Airbnb</span> help pay rent?</h1>
-      <div class="calc-function">
-        <div class="row">
-          <input id="zipcode-input" class="zipcode-input" type="text" placeholder="Zipcode (19104)"/>
-        </div>
-        <div class="row">
-          <div class="col-2-margin left-2">
-            <div class="result-title">
-              Typical monthly Rent*
-            </div>
-            <div class="calc-av" id="monthly-rent">
-            </div>
-          </div>
-          <div class="col-2-margin">
-            <div class="result-title">
-              Nightly <span class="rausch-text">Airbnb</span> Earnings**
-            </div>
-            <div class="calc-av" id="airbnb-earnings">
-            </div>
-          </div>
-        </div>
-        <div class="nights-calc">
-          <div class="nights-title">Number of nights to cover rent</div>
-          <div class="row nights-row">
-            <div class="col-2 nights-percent">
-              10% of rent
-            </div>
-            <div class="col-2 nights" id="ten-nights">
-            </div>
-          </div>
-          <hr>
-          <div class="row nights-row">
-            <div class="col-2 nights-percent">
-              30% of rent
-            </div>
-            <div class="col-2 nights" id="thirty-nights">
-            </div>
-          </div>
-          <hr>
-          <div class="row nights-row">
-            <div class="col-2 nights-percent">
-              50% of rent
-            </div>
-            <div class="col-2 nights" id="fifty-nights">
-            </div>
-          </div>
-        </div>
+      <div class='title-text'>To cover <input id="percent-input" class="percent input" type="text" placeholder="10" style="width:100px;" value="10" max="100"/> % of my rent in <input id="zipcode-input" class="zipcode input" type="text" style="width:150px;" value="20005"/> zipcode, I need to host <span id='nights-text' style="font-weight:bold;"> </span> nights per month on Airbnb. </div> 
 
-        <div class="row">
-          <div class="nights-title">Relative Opportunity Within Greater Metropolitan Area ***</div>
-          <svg id='legend-container'></svg>
-        </div>
+      <div class="calc-function">
 
         <div class ='row'> 
 
-        <div class="nights-title">Notes</div>
+        <div class="notes-title">Notes</div>
           <div class="row nights-row">
             <div class="col-6 nights-row">
               * Data reflect the 5 year estimate of median gross rent for the selected zip code. (From The American Community Survey; Table B25064, Zip Code Tabulation Areas). Note: All rents exceeding $2000 are reported as $2000, due to limitations of Census information. 
             </div>
             <div class="col-6 nights-row">
               ** This estimate is calculated for the chosen zip code by calculating the average nightly earnings of all booked private room listings in 2015, and taking the median across listings.
-            </div>
-            <div class="col-6 nights-row">
-              *** This index displays the relative opportunity that Airbnb represents in a given zipcode. The darker, the highest the rent one Airbnb night can cover.
             </div>
             <div class="col-6 nights-row">
               To learn more about hosting, visit <a href="wwww.airbnb.com/host"> airbnb.com/host </a>
@@ -92,6 +40,10 @@
     </div>
   </div>
   <div class="col-right" id="map"></div>
+  <div id="legend">
+    <div class="legend-title">Relative Opportunity</div>
+    <svg id='legend-container'></svg>
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -106,6 +58,7 @@
   var brew_reverse = ['#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#0868ac','#084081'];
   var color_scale = d3.scaleQuantize().range(brew_colors);
   var number_format = d3.format(".2r");
+  var number_format_nights = d3.format(".1r");
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -114,8 +67,8 @@
       center: {lat: 38.901291, lng: -77.037206},
       zoom: 10
     });
-
-    drawNeighborPolygons(20005);
+ 
+    checkZipcode(20005);
 
   }
 
@@ -134,6 +87,16 @@
 
       }
     });
+
+    $('#percent-input').on('input', function() {
+
+      if ($(this).val().length < 4 && /^\d+$/.test($(this).val())) {
+
+        updateResults(zipcode_data['monthly_rent'],zipcode_data['nightly_rev']);
+
+      }
+    });
+
   });
 
   /**************************************
@@ -317,11 +280,8 @@
             return;
           }
           updateResults(
-            "$" + zipcode_data.monthly_rent,
-            "$" + zipcode_data.nightly_rev,
-            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.1)*10)/10  + " nights on Airbnb",
-            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.3)*10)/10  + " nights on Airbnb",
-            "\u00a0" + Math.round((zipcode_data.payoff_nights*0.5)*10)/10 + " nights on Airbnb"
+            zipcode_data.monthly_rent,
+            zipcode_data.nightly_rev
           );
         }
       }
@@ -331,21 +291,18 @@
   function clearResults() {
     if (highlighted_polygon != null)
       highlighted_polygon.setMap(null);
-
-    var empty = "- -";
-    updateResults(empty, empty, empty, empty, empty);
   }
 
-  function updateResults(monthly_rent, airbnb_earnings, ten, thirty, fifty) {
-    if (monthly_rent == null || airbnb_earnings == null || ten == null || thirty == null || fifty == null) {
+  function updateResults(monthly_rent, airbnb_earnings) {
+    if (monthly_rent == null || airbnb_earnings == null) {
       return;
     }
 
-    $('#monthly-rent').text(monthly_rent);
-    $('#airbnb-earnings').text(airbnb_earnings);
-    $('#ten-nights').text(ten);
-    $('#thirty-nights').text(thirty);
-    $('#fifty-nights').text(fifty);
+    var percent = parseFloat($("#percent-input").val());
+    var nights_needed; 
+    if((monthly_rent)*(percent/100) / airbnb_earnings > 30) {nights_needed = '30+';} else {nights_needed = number_format_nights((monthly_rent)*(percent/100) / airbnb_earnings)};
+
+    $('#nights-text').text(nights_needed);
   }
 
   function updateCenterMap(zipcode) {
