@@ -231,9 +231,9 @@ input {
   font-family: 'Circular Air Pro';
   color: #444;
   font-size: 16px;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   margin-top: 25px;
-  margin-left: 40px
+  margin-left: 25px
 }
 
 #legend{
@@ -247,9 +247,9 @@ input {
 }
 
 #legend-container{
-  width: 400px;
-  height: 65px;
+  width: 200px;
+  height: 50px;
   font-size: 13px;
   fill: #555;
-  margin-left:40px;
+  margin-left:25px;
 }

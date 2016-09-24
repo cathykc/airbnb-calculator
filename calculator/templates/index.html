@@ -16,7 +16,7 @@
         <div class="row">
           <div class="col-1"><img src="{% static 'img/logo.png' %}" class="logo"/></div>
           <div class='title'> How can Airbnb help cover rent ?</div>
-          <div class='subtitle'> Learn more about hosting at <a class='hyperlink' href="www.airbnb.com/host">airbnb.com/host </a> </div>
+          <div class='subtitle'> Learn more about hosting at <a class='hyperlink' href="http://www.airbnb.com/host" target='blank'>airbnb.com/host </a> </div>
         </div>
       <hr>
         <div class = 'row'>
@@ -25,20 +25,20 @@
         </div>
         <div class = 'row'>
           <div class='col-1 input-title'>How many nights a month can you rent ? </div> 
-          <input id="night-input" type="text" placeholder="3" value="3" max="30"/>
+          <input id="nights-input" type="text" placeholder="3" value="3" max="30"/>
         </div>  
       <hr>
       <div class = 'row'>
         <div class='col-3 figures' id="nightly-revenue">
-          <p class='figures'>$123</p>
-          <p class='figures-legend'> Nightly Revenue *</p>
+          <p class='figures' id='figures-revenue'>--</p>
+          <p class='figures-legend'> Monthly Revenue *</p>
         </div>
         <div class='col-3' id="monthly-rent">
-          <p class='figures'>$1,234</p>
+          <p class='figures' id='figures-rent'>--</p>
           <p class='figures-legend'> Monthly Rent **</p>
         </div>
         <div class='col-3' id="rent-covered">
-          <p class='figures'>10%</p>
+          <p class='figures' id='figures-cover'>--</p>
           <p class='figures-legend'> Rent Covered</p>
         </div>
       </div>
@@ -47,10 +47,10 @@
       <div class ='row'> 
         <div class="notes-title">Notes</div>
           <div class="row notes-text">
-            <div class="col-6 nights-row">
+            <div>
               * Airbnb earnings for each zip code by calculating the average nightly earnings of all booked private room listings in 2015, and taking the median across listings.
             </div>
-            <div class="col-6 nights-row">
+            <div>
               ** Data reflect the 5 year estimate of median gross rent for the selected zip code (American Community Survey). All rents over $2000 are reported as $2000, as per Census data. 
             </div>
           </div>
@@ -79,7 +79,10 @@
   var brew_reverse = ['#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#0868ac','#084081'];
   var color_scale = d3.scaleQuantize().range(brew_colors);
   var number_format = d3.format(".2r");
+  var number_percent = d3.format(",.0%");
+  var number_revenue = function(d) { return "$" + d3.format(",.0f")(d); };
   var number_format_nights = d3.format(".1r");
+  var legend = {'rect-width':20,'rect-height':15, 'height-margin':45};
 
   // TODO: Move all of this stuff over to an external Javascript file or several
 
@@ -109,9 +112,9 @@
       }
     });
 
-    $('#percent-input').on('input', function() {
+    $('#nights-input').on('input', function() {
 
-      if ($(this).val().length < 4 && /^\d+$/.test($(this).val())) {
+      if ($(this).val() < 32 && /^\d+$/.test($(this).val())) {
 
         updateResults(zipcode_data['monthly_rent'],zipcode_data['nightly_rev']);
 
@@ -132,9 +135,9 @@
     d3.select("#legend-container").selectAll('rect')
       .data(brew_reverse)
     .enter().append("svg:rect")
-    .attr("width",40)
-    .attr("height",25)
-    .attr("x",function(d,i) {return i*40;})
+    .attr("width",legend['rect-width'])
+    .attr("height",legend['rect-height'])
+    .attr("x",function(d,i) {return i*legend['rect-width'];})
     .attr("y",10)
     .attr("fill",function(d) {return d;})
 
@@ -142,8 +145,8 @@
     d3.select("#legend-container").selectAll('text')
       .data(opportunity_legend)
     .enter().append("svg:text")
-    .attr("x",function(d,i) {return i*165;})
-    .attr("y",60)
+    .attr("x",function(d,i) {return i*(legend['rect-width'] * 4);})
+    .attr("y",legend['height-margin'])
     .text(function(d) {return d})
 
   }
@@ -319,11 +322,12 @@
       return;
     }
 
-    var percent = parseFloat($("#percent-input").val());
-    var nights_needed; 
-    if((monthly_rent)*(percent/100) / airbnb_earnings > 30) {nights_needed = '30+';} else {nights_needed = number_format_nights((monthly_rent)*(percent/100) / airbnb_earnings)};
+    var nights_input = parseFloat($("#nights-input").val());
+    var monthly_earnings = nights_input * airbnb_earnings;
 
-    $('#nights-text').text(nights_needed);
+    $('#figures-revenue').text(number_revenue(monthly_earnings));
+    $('#figures-rent').text(number_revenue(monthly_rent));
+    $('#figures-cover').text(number_percent(monthly_earnings / monthly_rent));
   }
 
   function updateCenterMap(zipcode) {
