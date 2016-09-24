@@ -93,7 +93,7 @@ body {
   margin: auto;
   position: relative;
   padding: 40px;
-  padding-top: 15px;
+  padding-top: 5%;
 }
 
 .logo {
@@ -109,7 +109,7 @@ body {
   font-weight: bold;
   color: #4A4A4A;  
   font-size: 35px;
-  width:70%;
+  width:60%;
 }
 
 .subtitle{
