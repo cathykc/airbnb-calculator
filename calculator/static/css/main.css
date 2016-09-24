@@ -19,14 +19,8 @@ body {
   cursor: default;
   display: flex;
   flex-direction: column;
-  font-family: 'Circular Air Pro'
-}
-
-hr {
-  height: 1px;
-  border: none;
-  color: #DDD;
-  background-color: #DDD;
+  font-family: 'Circular Air Pro';
+  color: #484848;
 }
 
 .row:before,
@@ -53,6 +47,14 @@ hr {
   width: calc(50% - 15px);
 }
 
+.col-08 {
+  width: 80%;
+}
+
+.col-1 {
+  width: 100%;
+}
+
 .col-2 {
   width: 50%;
 }
@@ -73,6 +75,10 @@ hr {
   width: 33%;
 }
 
+.margin-bottm-1 {
+  margin-bottom:1em;
+}
+
 @media all and (max-width:600px){
   .col-left, .col-right{ width: 100%; }
   .message{ width: 70%; }
@@ -86,15 +92,36 @@ hr {
   max-width: 1000px;
   margin: auto;
   position: relative;
-  padding: 50px;
+  padding: 40px;
+  padding-top: 15px;
 }
 
 .logo {
   width: 60px;
   height: auto;
   float: left;
-  margin-bottom: 50px;
-  margin-top: 40px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.title {
+  font-family: 'Circular Air Pro';
+  font-weight: bold;
+  color: #4A4A4A;  
+  font-size: 35px;
+  width:70%;
+}
+
+.subtitle{
+  color: #4A4A4A;
+  font-size: 18px;
+  margin-top: 10px;
+  font-family: 'Circular Air Pro-Light';
+}
+
+.hyperlink{
+  color: #00A699;
+  text-decoration: none;
 }
 
 .title-text {
@@ -104,6 +131,14 @@ hr {
   width:80%;
 }
 
+hr{
+border: 0;
+border-top: 1px solid #eee;
+clear: both;
+margin: 22px 0;
+width: 48px;
+}
+
 .calc-function {
   width: 80%;
 }
@@ -111,15 +146,24 @@ hr {
 .rausch-text {
 }
 
-.input {
-    font-size: 48px;
-    color: #444;
-    font-family: 'Circular Air Pro-Light';
-    border: 0;
-    border-left: 190px;
-    text-align: center;
-    border-bottom: 2px solid #DADCDF;
-    border-width: 1px;
+input:focus {
+  outline: none !important
+}
+
+input {
+  font-size: 16px;
+  color: #484848;
+  line-height: 24px;
+  margin: 0px;
+  font-weight: 200;
+  background-color: transparent;
+  padding: 11px;
+  width: 85%;
+  border: 1px solid #DBDBDB;
+}
+
+.input-title{
+  margin-bottom:0.5em;
 }
 
 .result-title {
@@ -149,16 +193,13 @@ hr {
 .notes-title {
   font-family: 'Circular Air Pro';
   color: #444;
-  font-size: 28px;
-  margin-bottom: 25px;
-  margin-top: 25%;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
-.nights-row {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  color: #888;
-  font-size: 18px;
+.notes-text{
+  font-family: 'Circular Air Pro-Light';
+  font-size: 12px;
 }
 
 .nights-percent {
@@ -167,6 +208,18 @@ hr {
 
 .nights {
   text-align: right;
+}
+
+
+.figures{
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.figures-legend{
+  font-family: 'Circular Air Pro-Light';
+  font-size: 16px;
+
 }
 
 /*temp*/

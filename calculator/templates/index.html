@@ -13,37 +13,58 @@
 <div class="row">
   <div class="col-left calculator-section">
     <div class="calculator">
-      <div class="row">
-        <img src="{% static 'img/logo.png' %}" class="logo"/>
+        <div class="row">
+          <div class="col-1"><img src="{% static 'img/logo.png' %}" class="logo"/></div>
+          <div class='title'> How can Airbnb help cover rent ?</div>
+          <div class='subtitle'> Learn more about hosting at <a class='hyperlink' href="www.airbnb.com/host">airbnb.com/host </a> </div>
+        </div>
+      <hr>
+        <div class = 'row'>
+          <div class='col-1 input-title'>What is your zipcode ? </div> 
+          <input id="zipcode-input" class ="margin-bottm-1" type="text" value="20005"/>
+        </div>
+        <div class = 'row'>
+          <div class='col-1 input-title'>How many nights a month can you rent ? </div> 
+          <input id="night-input" type="text" placeholder="3" value="3" max="30"/>
+        </div>  
+      <hr>
+      <div class = 'row'>
+        <div class='col-3 figures' id="nightly-revenue">
+          <p class='figures'>$123</p>
+          <p class='figures-legend'> Nightly Revenue *</p>
+        </div>
+        <div class='col-3' id="monthly-rent">
+          <p class='figures'>$1,234</p>
+          <p class='figures-legend'> Monthly Rent **</p>
+        </div>
+        <div class='col-3' id="rent-covered">
+          <p class='figures'>10%</p>
+          <p class='figures-legend'> Rent Covered</p>
+        </div>
       </div>
-      <div class='title-text'>To cover <input id="percent-input" class="percent input" type="text" placeholder="10" style="width:100px;" value="10" max="100"/> % of my rent in <input id="zipcode-input" class="zipcode input" type="text" style="width:150px;" value="20005"/> zipcode, I need to host <span id='nights-text' style="font-weight:bold;"> </span> nights per month on Airbnb. </div> 
+      <hr>  
 
-      <div class="calc-function">
-
-        <div class ='row'> 
-
+      <div class ='row'> 
         <div class="notes-title">Notes</div>
-          <div class="row nights-row">
+          <div class="row notes-text">
             <div class="col-6 nights-row">
-              * Data reflect the 5 year estimate of median gross rent for the selected zip code. (From The American Community Survey; Table B25064, Zip Code Tabulation Areas). Note: All rents exceeding $2000 are reported as $2000, due to limitations of Census information. 
+              * Airbnb earnings for each zip code by calculating the average nightly earnings of all booked private room listings in 2015, and taking the median across listings.
             </div>
             <div class="col-6 nights-row">
-              ** This estimate is calculated for the chosen zip code by calculating the average nightly earnings of all booked private room listings in 2015, and taking the median across listings.
-            </div>
-            <div class="col-6 nights-row">
-              To learn more about hosting, visit <a href="wwww.airbnb.com/host"> airbnb.com/host </a>
+              ** Data reflect the 5 year estimate of median gross rent for the selected zip code (American Community Survey). All rents over $2000 are reported as $2000, as per Census data. 
             </div>
           </div>
         </div>
 
-      </div>
     </div>
   </div>
+
   <div class="col-right" id="map"></div>
   <div id="legend">
     <div class="legend-title">Relative Opportunity</div>
     <svg id='legend-container'></svg>
   </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
